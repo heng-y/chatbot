@@ -9,9 +9,10 @@ public final class Test{
 
 	public static void main(String[] args) {
 		Scanner s = new Scanner(System.in);
-		Pattern pattern = new TestPattern("Socrates|Plato","be","man|animal",MatchType.SynsetMatch);
+		Pattern pattern = new TestPattern("Socrates|Plato","be","man|animal",MatchType.BasicInclude);
 		ChatEngine bot = new ChatEngine(new StandardOutputDisplay());
 		bot.addPattern(pattern);
+		bot.setSentimentResponse(new GenericSentimentResponse());
 		for (;;) {
 			System.out.print("You > ");
 			

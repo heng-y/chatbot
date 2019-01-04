@@ -5,6 +5,7 @@ import edu.stanford.nlp.ie.util.RelationTriple;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.naturalli.NaturalLogicAnnotations;
 import edu.stanford.nlp.pipeline.*;
+import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.util.CoreMap;
 
 import java.io.File;
@@ -30,18 +31,23 @@ import java.util.*;
 public class ChatEngine {
 	StanfordCoreNLP nlpPipeline;
 	ArrayList<Pattern> matchPatterns;
+	SentimentResponse response;
 	Display display;
 	Dictionary dict;
 	public ChatEngine(Display display) {
 		Properties properties = new Properties();
-		properties.setProperty("annotators","tokenize,ssplit,pos,lemma,depparse,natlog,openie");
+		properties.setProperty("annotators","tokenize,ssplit,pos,parse,lemma,depparse,natlog,openie,sentiment");
 		nlpPipeline = new StanfordCoreNLP(properties);
 		matchPatterns = new ArrayList<Pattern>();
 		this.display = display;
 		dict = new Dictionary(new File("/home/heng/WordNet-3.0/dict"));
+		response = new DefaultSentimentResponse();
 	}
 	public void addPattern(Pattern pattern) {
 		matchPatterns.add(pattern);
+	}
+	public void setSentimentResponse(SentimentResponse r) {
+		response = r;
 	}
 	/**
 	 * getResponse is the core engine of this library- it converses with the user.
@@ -67,6 +73,9 @@ public class ChatEngine {
 		ArrayList< ArrayList<ChatTriplet> > allTripletsBySentence = new ArrayList< ArrayList<ChatTriplet> >();
 		D.d(allTripletsBySentence);
 		for (CoreMap sentence : annot.get(CoreAnnotations.SentencesAnnotation.class)) {
+			String sentiment = sentence.get(SentimentCoreAnnotations.SentimentClass.class);
+			display.display(response.getReaction(sentiment));
+			
 				Collection<RelationTriple> triples = sentence.get(NaturalLogicAnnotations.RelationTriplesAnnotation.class);
 				ArrayList<ChatTriplet> list = new ArrayList<ChatTriplet>();
 				for (RelationTriple triple : triples) {
@@ -113,10 +122,13 @@ public class ChatEngine {
 			if (pattern.type == MatchType.BasicInclude) {
 				for (ArrayList<ChatTriplet> sentence : allTripletsBySentence) {
 					for (ChatTriplet triplet : sentence) {
+						if (triplet.isUsed)
+							continue;
 						if (triplet.subject.matches(pattern.requiredSubject)
 								&& triplet.relation.matches(pattern.requiredPredicate) 
 								&& triplet.object.matches(pattern.requiredObject)) {
 							display.display(pattern.onMatch());
+							triplet.isUsed = true;
 						}
 					}
 				}

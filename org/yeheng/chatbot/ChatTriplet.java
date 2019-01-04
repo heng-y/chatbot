@@ -6,6 +6,7 @@ public class ChatTriplet {
 	public String object;
 	
 	public boolean isExtra = false;
+	public boolean isUsed = false;
 	
 	public ChatTriplet(String s, String r, String o) {
 		subject = s;
