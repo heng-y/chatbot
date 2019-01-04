@@ -25,7 +25,7 @@ public enum MatchType {
 	SynsetMatch,
 	/**
 	 * Same as SynsetMatch except with antonyms.
-	 * @see SynsetMatch
+	 * 
 	 */
 	AntMatch,
 
