@@ -1,6 +1,6 @@
 package org.yeheng.chatbot;
 
-public class ChatTriplet {
+class ChatTriplet {
 	public String subject;
 	public String relation;
 	public String object;

@@ -1,11 +1,10 @@
 package org.yeheng.chatbot;
-
-public class D {
+class D {
 	
 	
-	public static void d(Object o) {
+	static void d(Object o) {
 		//Change When The Time Has Come
-		boolean debug = true;
+		boolean debug = false;
 		
 		if (debug)
 			System.out.println(o.toString());
