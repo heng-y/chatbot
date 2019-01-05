@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import org.yeheng.chatbot.displays.StandardOutputDisplay;
 
-public final class Test{
+final class Test{
 	
 
 	public static void main(String[] args) {

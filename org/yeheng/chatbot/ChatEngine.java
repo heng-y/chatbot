@@ -11,6 +11,8 @@ import edu.stanford.nlp.util.CoreMap;
 import java.io.File;
 import java.util.*;
 
+import org.yeheng.chatbot.responses.CannedDefaultResponse;
+
 /**
  * The ChatEngine class is the core of YeHeng.org Chatbot.
  * 
@@ -34,6 +36,7 @@ public class ChatEngine {
 	SentimentResponse response;
 	Display display;
 	Dictionary dict;
+	DefaultResponse defaultR;
 	public ChatEngine(Display display) {
 		Properties properties = new Properties();
 		properties.setProperty("annotators","tokenize,ssplit,pos,parse,lemma,depparse,natlog,openie,sentiment");
@@ -42,9 +45,13 @@ public class ChatEngine {
 		this.display = display;
 		dict = new Dictionary(new File("/home/heng/WordNet-3.0/dict"));
 		response = new DefaultSentimentResponse();
+		defaultR = new CannedDefaultResponse();
 	}
 	public void addPattern(Pattern pattern) {
 		matchPatterns.add(pattern);
+	}
+	public void setDefaultResponse(DefaultResponse r) {
+		defaultR = r;
 	}
 	public void setSentimentResponse(SentimentResponse r) {
 		response = r;
@@ -116,6 +123,7 @@ public class ChatEngine {
 		
 		
 		//Match Patterns
+		boolean patternMatched = false;
 		
 	
 		for (Pattern pattern : matchPatterns) {
@@ -129,6 +137,7 @@ public class ChatEngine {
 								&& triplet.object.matches(pattern.requiredObject)) {
 							display.display(pattern.onMatch());
 							triplet.isUsed = true;
+							patternMatched = true;
 						}
 					}
 				}
@@ -146,6 +155,8 @@ public class ChatEngine {
 			} 
 			
 		}
+		if (!patternMatched)
+			display.display(defaultR.getDefaultResponse());
 		
 		
 		
